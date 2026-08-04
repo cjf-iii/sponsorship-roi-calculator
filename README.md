@@ -62,9 +62,9 @@ The model was trained on 5,000 synthetic deals calibrated to IEG and Nielsen Spo
 
 | Metric | Media Value Ratio | Brand Lift % | ROI Score | What It Means |
 |:-------|:-----------------:|:------------:|:---------:|:--------------|
-| **R-squared** | 0.686 | 0.718 | 0.784 | The model explains 69-78% of the variance in outcomes |
-| **MAE** | 0.25 | 0.82 | 5.65 | Average prediction error is small relative to each scale |
-| **MAPE** | 9.5% | 11.9% | 10.4% | Predictions are within ~10% of actual values on average |
+| **R-squared** | 0.680 | 0.719 | 0.777 | The model explains 68-78% of the variance in outcomes |
+| **MAE** | 0.25 | 0.82 | 5.75 | Average prediction error is small relative to each scale |
+| **MAPE** | 9.5% | 11.9% | 10.6% | Predictions are within ~10% of actual values on average |
 
 ---
 
@@ -109,6 +109,17 @@ bash run.sh --app
 ```
 
 The app opens at **http://localhost:8501**.
+
+### Hardware verification
+
+```bash
+./scripts/verify_macos_metal.sh
+python -m unittest discover -s tests -v
+```
+
+The preflight fails unless the test host is an ARM64 Mac with Metal support. XGBoost and SHAP execute as CPU workloads on that machine; the project does not represent them as Metal-accelerated.
+
+See [VERIFICATION.md](VERIFICATION.md) for the recorded host, current held-out metrics, and reproduction commands.
 
 ---
 
