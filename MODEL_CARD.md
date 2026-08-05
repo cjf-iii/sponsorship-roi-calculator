@@ -15,10 +15,12 @@ Three independent XGBoost regressors estimate media-value ratio, brand-lift perc
 
 The pipeline writes MAE, R-squared, and MAPE for every target to `model/metrics.json`. The current verified run measured ROI R-squared of 0.7771, which rounds to 0.78 in résumé presentation.
 
-## Hardware boundary
+## Runtime boundary
 
-Tests are gated to ARM64 macOS hosts with Metal support. XGBoost training is CPU-based on Apple Silicon; this repository does not claim that XGBoost uses Metal.
+XGBoost training is CPU-based. The project records one Apple-silicon verification run and repeats the same locked contract on a public Linux runner; it does not claim Metal acceleration.
 
 ## Limitations
 
 Synthetic relationships make the project reproducible and safe to inspect, but the scores do not establish accuracy on real sponsorships. The output is a decision-support demonstration, not a valuation or financial recommendation.
+
+The saved model uses joblib/pickle serialization. Load only artifacts created locally or obtained from a trusted source.

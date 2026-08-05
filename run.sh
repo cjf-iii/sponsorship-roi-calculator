@@ -7,7 +7,7 @@
 #   bash run.sh --app    # Skip data/training, just launch the app
 #
 # Prerequisites:
-#   pip install -r requirements.txt
+#   uv sync --locked
 # ═══════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -30,12 +30,12 @@ if [[ "${1:-}" != "--app" ]]; then
     echo ""
     echo "Step 1/3: Generating synthetic sponsorship deal data..."
     echo "───────────────────────────────────────────────────────────────"
-    python data/generate_data.py
+    uv run python data/generate_data.py
 
     echo ""
     echo "Step 2/3: Training XGBoost models..."
     echo "───────────────────────────────────────────────────────────────"
-    python model/train.py
+    uv run python model/train.py
 
 fi
 
@@ -44,4 +44,4 @@ echo "Step 3/3: Launching Streamlit app..."
 echo "───────────────────────────────────────────────────────────────"
 echo "Open http://localhost:8501 in your browser"
 echo ""
-streamlit run app.py
+uv run streamlit run app.py

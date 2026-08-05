@@ -4,4 +4,7 @@ __pycache__/
 model/*.joblib
 data/*.csv
 model/metrics.json
+notebooks/artifacts/
+notebooks/data/
+notebooks/.ipynb_checkpoints/
 .DS_Store

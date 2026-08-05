@@ -5,14 +5,17 @@ import unittest
 import numpy as np
 
 from data.generate_data import N_RECORDS, generate_dataset
-from model.train import TARGETS, compute_mape, feature_engineering
+from model.train import (
+    TARGETS,
+    compute_mape,
+    feature_engineering,
+    prepare_feature_partitions,
+)
 
 
 class SponsorshipPipelineTests(unittest.TestCase):
     def test_generator_produces_complete_reproducible_contract(self) -> None:
-        np.random.seed(42)
         first = generate_dataset()
-        np.random.seed(42)
         second = generate_dataset()
 
         self.assertEqual(len(first), N_RECORDS)
@@ -22,8 +25,11 @@ class SponsorshipPipelineTests(unittest.TestCase):
         self.assertTrue(set(TARGETS).issubset(first.columns))
         self.assertTrue(first["roi_score"].between(1, 100).all())
 
+    def test_generator_rejects_an_empty_dataset(self) -> None:
+        with self.assertRaises(ValueError):
+            generate_dataset(n_records=0)
+
     def test_feature_engineering_is_numeric_and_leakage_safe(self) -> None:
-        np.random.seed(42)
         raw = generate_dataset().head(100)
         transformed = feature_engineering(raw)
         inputs = transformed.drop(columns=TARGETS)
@@ -31,6 +37,15 @@ class SponsorshipPipelineTests(unittest.TestCase):
         self.assertGreater(inputs.shape[1], raw.shape[1])
         self.assertFalse(inputs.select_dtypes(exclude=["number", "bool"]).columns.any())
         self.assertTrue(np.isfinite(inputs.astype(float).to_numpy()).all())
+
+        _, _, _, test_indices = prepare_feature_partitions(raw)
+        raw.loc[raw.index[test_indices[0]], "sport"] = "Held-Out-Only Sport"
+        X_train, X_test, train_indices, repeated_test_indices = prepare_feature_partitions(raw)
+
+        self.assertTrue(set(train_indices).isdisjoint(repeated_test_indices))
+        self.assertEqual(len(train_indices) + len(repeated_test_indices), len(raw))
+        self.assertEqual(list(X_train.columns), list(X_test.columns))
+        self.assertFalse(any("Held-Out-Only" in column for column in X_train.columns))
 
     def test_mape_has_an_auditable_known_value(self) -> None:
         truth = np.array([100.0, 200.0])
