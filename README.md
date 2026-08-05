@@ -96,6 +96,16 @@ GitHub Actions repeats this contract on a public Linux runner and smoke-tests th
 
 See [MODEL_CARD.md](MODEL_CARD.md) for intended use and limitations.
 
+## Local pre-push gate
+
+GitHub Actions is authoritative. To run the same locked lint and test checks before a local push:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The committed hook invokes only `uv sync --locked` and `uv run`; it does not use a system Python environment.
+
 ## License
 
 MIT
